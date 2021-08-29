@@ -27,7 +27,7 @@ public class CustomAuditEntityListener {
 
     @PrePersist
     public void prePersist(BaseEntity baseEntity) throws UnknownHostException {
-        System.out.println(baseEntity);
+
         baseEntity.setDateUpdate(LocalDateTime.now());
         if (Objects.isNull(baseEntity.getUserUpdate())) {
             baseEntity.setUserUpdate(USER_SYSTEM_ID);
