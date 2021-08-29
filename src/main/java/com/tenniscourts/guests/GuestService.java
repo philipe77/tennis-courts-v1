@@ -23,4 +23,10 @@ public class GuestService {
     public GuestDTO createGuest(GuestDTO guest) {
         return guestMapper.map(guestRepository.saveAndFlush(guestMapper.map(guest)));
     }
+
+    public GuestDTO updateGuest(GuestDTO guest) {
+        Guest findGuest = findGuestById(guest.getId());
+        findGuest.setName(guest.getName());
+        return guestMapper.map(guestRepository.saveAndFlush(findGuest));
+    }
 }

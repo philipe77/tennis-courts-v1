@@ -5,10 +5,7 @@ import com.tenniscourts.schedules.CreateScheduleRequestDTO;
 import com.tenniscourts.tenniscourts.TennisCourtService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value="/guests")
@@ -21,5 +18,11 @@ public class GuestController extends BaseRestController {
     public ResponseEntity<Void> createGuest(@RequestBody GuestDTO guest) {
         return ResponseEntity.created(locationByEntity(guestService.createGuest(guest).getId())).build();
     }
+
+    @PutMapping
+    public ResponseEntity<Void> updateGuest(@RequestBody GuestDTO guest) {
+        return ResponseEntity.created(locationByEntity(guestService.updateGuest(guest).getId())).build();
+    }
+
 
 }
