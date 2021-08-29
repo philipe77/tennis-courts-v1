@@ -32,6 +32,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler(EntityNotFoundException.class)
     public final ResponseEntity<ErrorDetails> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+        System.out.println(request);
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
@@ -46,6 +47,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
 
     @ExceptionHandler(IllegalArgumentException.class)
     public final ResponseEntity<ErrorDetails> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
+        System.out.println(request);
         ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(errorDetails, BAD_REQUEST);
@@ -87,6 +89,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     private ResponseEntity<Object> buildResponseEntity(ErrorDetails error, HttpStatus status) {
+        System.out.println(error);
         return new ResponseEntity<>(error, status);
     }
 
