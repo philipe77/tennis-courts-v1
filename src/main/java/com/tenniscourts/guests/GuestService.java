@@ -29,4 +29,9 @@ public class GuestService {
         findGuest.setName(guest.getName());
         return guestMapper.map(guestRepository.saveAndFlush(findGuest));
     }
+
+    public void deleteGuest(Long id) {
+        Guest findGuest = findGuestById(id);
+        guestRepository.delete(findGuest);
+    }
 }

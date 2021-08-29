@@ -24,5 +24,11 @@ public class GuestController extends BaseRestController {
         return ResponseEntity.created(locationByEntity(guestService.updateGuest(guest).getId())).build();
     }
 
+    @DeleteMapping(value="/{guestId}")
+    public ResponseEntity<?> deleteGuest(@PathVariable Long guestId) {
+        guestService.deleteGuest(guestId);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
