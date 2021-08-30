@@ -4,12 +4,15 @@ import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.guests.Guest;
 import com.tenniscourts.guests.GuestService;
 import com.tenniscourts.schedules.*;
+import com.tenniscourts.util.CommonDates;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,11 +67,12 @@ public class ReservationService {
     }
 
     private Reservation cancel(Long reservationId) {
+        LocalTime now =  LocalTime.now();
         return reservationRepository.findById(reservationId).map(reservation -> {
 
             this.validateCancellation(reservation);
-
-            BigDecimal refundValue = getRefundValue(reservation);
+            Reservation reservationFee = reservationFee(reservation, now);
+            BigDecimal refundValue = getRefundValue(reservationFee);
             return this.updateReservation(reservation, refundValue, ReservationStatus.CANCELLED);
 
         }).orElseThrow(() -> {
@@ -108,11 +112,12 @@ public class ReservationService {
             "Cannot reschedule to the same slot.*/
     public ReservationDTO rescheduleReservation(Long previousReservationId, Long scheduleId) {
         Reservation previousReservation = cancel(previousReservationId);
-
+        LocalTime now =  LocalTime.now();
         if (scheduleId.equals(previousReservation.getSchedule().getId())) {
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");
         }
 
+        previousReservation = reservationFee(previousReservation, now);
         previousReservation.setReservationStatus(ReservationStatus.RESCHEDULED);
         reservationRepository.save(previousReservation);
 
@@ -121,7 +126,7 @@ public class ReservationService {
                 .scheduleId(scheduleId)
                 .build());
         newReservation.setPreviousReservation(reservationMapper.map(previousReservation));
-        return null;
+        return newReservation;
     }
 
     private void hasReservationAlreadyMade(Schedule schedule, Guest guest) {
@@ -129,5 +134,17 @@ public class ReservationService {
         if(reservationExists.isPresent()) {
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");
         }
+    }
+
+    private Reservation reservationFee(Reservation reservation, LocalTime cancelTime) {
+        CommonDates commonDates = new CommonDates();
+        if(commonDates.compareDifferentHours(12,00, 23, 59, cancelTime)) {
+            reservation.setRefundValue(reservation.getValue().multiply(BigDecimal.valueOf(0.25)));
+        } else if(commonDates.compareDifferentHours(02,00, 11, 59, cancelTime)){
+            reservation.setRefundValue(reservation.getValue().multiply(BigDecimal.valueOf(0.50)));
+        } else if(commonDates.compareDifferentHours(00,01, 02, 00, cancelTime)) {
+            reservation.setRefundValue(reservation.getValue().multiply(BigDecimal.valueOf(0.75)));
+        }
+        return reservation;
     }
 }
