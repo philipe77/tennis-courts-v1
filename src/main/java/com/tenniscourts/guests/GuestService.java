@@ -1,10 +1,13 @@
 package com.tenniscourts.guests;
 
+import com.tenniscourts.exceptions.AuthorizationRoleException;
+import com.tenniscourts.exceptions.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.NotFoundException;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -34,4 +37,13 @@ public class GuestService {
         Guest findGuest = findGuestById(id);
         guestRepository.delete(findGuest);
     }
+
+    public List<GuestDTO> findAllGuests() {
+        return guestMapper.map(guestRepository.findAll());
+    }
+
+    public List<GuestDTO> findByName(String name) {
+        return guestMapper.map(guestRepository.findByNameContaining(name));
+    }
+
 }

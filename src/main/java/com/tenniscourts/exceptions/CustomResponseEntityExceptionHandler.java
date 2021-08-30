@@ -30,6 +30,13 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(AuthorizationRoleException.class)
+    public final ResponseEntity<ErrorDetails> handleAuthorizationRole(AuthorizationRoleException ex, WebRequest request) {
+        ErrorDetails errorDetails = new ErrorDetails(LocalDateTime.now(), ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
     public final ResponseEntity<ErrorDetails> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
         System.out.println(request);

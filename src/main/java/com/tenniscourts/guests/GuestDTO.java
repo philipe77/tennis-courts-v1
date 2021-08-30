@@ -1,5 +1,6 @@
 package com.tenniscourts.guests;
 
+import com.tenniscourts.config.persistence.Profile;
 import lombok.*;
 
 import javax.validation.constraints.NotNull;
@@ -16,5 +17,7 @@ public class GuestDTO {
 
     @NotNull
     private String name;
+
+    private Profile profile;
 
 }

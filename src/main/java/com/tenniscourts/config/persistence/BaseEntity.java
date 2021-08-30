@@ -1,6 +1,7 @@
 package com.tenniscourts.config.persistence;
 
 import com.tenniscourts.audit.CustomAuditEntityListener;
+import com.tenniscourts.reservations.ReservationStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -46,5 +48,8 @@ public class BaseEntity<ID> implements Serializable {
     @Column
     @CreatedDate
     private LocalDateTime dateCreate;
+
+    @Column
+    private Profile profile = Profile.GUEST;
 
 }
