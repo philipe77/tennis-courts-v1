@@ -3,13 +3,14 @@ package com.tenniscourts.guests;
 import com.tenniscourts.config.BaseRestController;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping(value="/guests")
 @AllArgsConstructor
+@Secured("ADMIN")
 public class GuestController extends BaseRestController {
     private final GuestService guestService;
 
@@ -23,14 +24,12 @@ public class GuestController extends BaseRestController {
         return ResponseEntity.created(locationByEntity(guestService.updateGuest(guest).getId())).build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping(value="/{guestId}")
     public ResponseEntity<?> deleteGuest(@PathVariable Long guestId) {
         guestService.deleteGuest(guestId);
         return ResponseEntity.noContent().build();
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping
     public ResponseEntity<List<GuestDTO>> listAllGuests() {
         return ResponseEntity.ok().body(guestService.findAllGuests());

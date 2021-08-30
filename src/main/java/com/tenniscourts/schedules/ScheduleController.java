@@ -18,14 +18,14 @@ public class ScheduleController extends BaseRestController {
     private final ScheduleService scheduleService;
 
     @PostMapping
-    public ResponseEntity<Void> addScheduleTennisCourt(CreateScheduleRequestDTO createScheduleRequestDTO) {
+    public ResponseEntity<Void> addScheduleTennisCourt(@RequestBody CreateScheduleRequestDTO createScheduleRequestDTO) {
         return ResponseEntity.created(locationByEntity(scheduleService.addSchedule(createScheduleRequestDTO.getTennisCourtId(), createScheduleRequestDTO).getId())).build();
     }
 
     @GetMapping(value="/dates")
     public ResponseEntity<List<ScheduleDTO>> findSchedulesByDates(@RequestParam(value = "startDate") LocalDate startDate,
                                                                   @RequestParam(value = "endDate") LocalDate endDate) {
-        System.out.println(startDate);
+
         return ResponseEntity.ok(scheduleService.findSchedulesByDates(LocalDateTime.of(startDate, LocalTime.of(0, 0)), LocalDateTime.of(endDate, LocalTime.of(23, 59))));
     }
 

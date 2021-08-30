@@ -24,7 +24,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT).permitAll()
                 .antMatchers("/h2-console/**").permitAll()
-                .antMatchers( "/guests/**" ).authenticated();
+                .antMatchers( "/guests/**" ).hasRole("ADMIN");
 
     }
 

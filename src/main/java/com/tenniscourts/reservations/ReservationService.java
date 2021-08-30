@@ -3,10 +3,7 @@ package com.tenniscourts.reservations;
 import com.tenniscourts.exceptions.EntityNotFoundException;
 import com.tenniscourts.guests.Guest;
 import com.tenniscourts.guests.GuestService;
-import com.tenniscourts.schedules.Schedule;
-import com.tenniscourts.schedules.ScheduleDTO;
-import com.tenniscourts.schedules.ScheduleMapper;
-import com.tenniscourts.schedules.ScheduleService;
+import com.tenniscourts.schedules.*;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,15 +28,28 @@ public class ReservationService {
     @Autowired
     private GuestService guestService;
 
+    @Autowired
+    private ScheduleRepository scheduleRepository;
+
     private final ReservationMapper reservationMapper;
     private final ScheduleMapper scheduleMapper;
 
     public ReservationDTO bookReservation(CreateReservationRequestDTO createReservationsRequestDTO) {
-        ScheduleDTO schedule = scheduleService.findSchedule(createReservationsRequestDTO.getScheduleId());
+        ScheduleDTO scheduleDTO = scheduleService.findSchedule(createReservationsRequestDTO.getScheduleId());
         Guest guest = guestService.findGuestById(createReservationsRequestDTO.getGuestId());
-        hasReservationAlreadyMade(scheduleMapper.map(schedule), guest);
-        Reservation createReservation = new Reservation(guest, scheduleMapper.map(schedule), BigDecimal.ZERO, ReservationStatus.READY_TO_PLAY, BigDecimal.ZERO);
+
+        hasReservationAlreadyMade(scheduleMapper.map(scheduleDTO), guest);
+
+        Reservation createReservation = new Reservation(
+                guest, scheduleMapper.map(scheduleDTO), BigDecimal.valueOf(10.0), ReservationStatus.READY_TO_PLAY, BigDecimal.ZERO);
         reservationRepository.save(createReservation);
+
+        Schedule schedule = scheduleMapper.map(scheduleDTO);
+        List<Reservation> listReservations = new ArrayList<>();
+        listReservations.add(createReservation);
+        schedule.setReservations(listReservations);
+        scheduleRepository.save(schedule);
+
         return reservationMapper.map(createReservation);
     }
 
@@ -87,7 +97,7 @@ public class ReservationService {
     public BigDecimal getRefundValue(Reservation reservation) {
         long hours = ChronoUnit.HOURS.between(LocalDateTime.now(), reservation.getSchedule().getStartDateTime());
 
-        if (hours >= 24) {
+        if (hours >= 24 || reservation.getSchedule().getEndDateTime().isAfter(LocalDateTime.now())) {
             return reservation.getValue();
         }
 
@@ -114,7 +124,7 @@ public class ReservationService {
         return null;
     }
 
-        private void hasReservationAlreadyMade(Schedule schedule, Guest guest) {
+    private void hasReservationAlreadyMade(Schedule schedule, Guest guest) {
         var reservationExists = reservationRepository.findBySchedule_IdAndGuest_Id(schedule.getId(), guest.getId());
         if(reservationExists.isPresent()) {
             throw new IllegalArgumentException("Cannot reschedule to the same slot.");

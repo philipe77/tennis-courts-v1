@@ -23,7 +23,7 @@ public class TennisCourtController extends BaseRestController {
     }
 
     @GetMapping(value="/schedules/{tennisCourtId}")
-    public ResponseEntity<TennisCourtDTO> findTennisCourtWithSchedulesById(@PathVariable  Long tennisCourtId) {
+    public ResponseEntity<TennisCourtDTO> findTennisCourtWithSchedulesById(@PathVariable Long tennisCourtId) {
         return ResponseEntity.ok(tennisCourtService.findTennisCourtWithSchedulesById(tennisCourtId));
     }
 }

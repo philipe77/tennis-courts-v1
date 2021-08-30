@@ -49,7 +49,5 @@ public class BaseEntity<ID> implements Serializable {
     @CreatedDate
     private LocalDateTime dateCreate;
 
-    @Column
-    private Profile profile = Profile.GUEST;
 
 }
