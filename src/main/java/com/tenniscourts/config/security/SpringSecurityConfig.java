@@ -6,18 +6,26 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import javax.ws.rs.HttpMethod;
+
 
 @Configuration
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private static final String[] PUBLIC_MATCHERS = {
+            "/h2-console/**"
+    };
+
     @Override
-    public void configure(HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception{
+        http.headers().frameOptions().sameOrigin();
+        http.cors().and().csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/guests").hasRole(String.valueOf(Profile.ADMIN))
-                .antMatchers("/guests/*").hasRole(String.valueOf(Profile.ADMIN))
-                .antMatchers("/**").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers(HttpMethod.GET, HttpMethod.POST, HttpMethod.DELETE, HttpMethod.PUT).permitAll()
+                .antMatchers("/h2-console/**").permitAll()
+                .antMatchers( "/guests/**" ).authenticated();
+
     }
 
 }

@@ -1,13 +1,10 @@
 package com.tenniscourts.guests;
 
 import com.tenniscourts.config.BaseRestController;
-import com.tenniscourts.config.persistence.Profile;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
@@ -26,6 +23,7 @@ public class GuestController extends BaseRestController {
         return ResponseEntity.created(locationByEntity(guestService.updateGuest(guest).getId())).build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping(value="/{guestId}")
     public ResponseEntity<?> deleteGuest(@PathVariable Long guestId) {
         guestService.deleteGuest(guestId);
